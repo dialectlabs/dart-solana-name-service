@@ -4,7 +4,7 @@
 
 ## Dart library for Bonfida SNS
 
-This library is a partial dart implementation of Bonfida's namespace protocol, specifically enabling the use of SNS (Solana Name Service) .sol domains in Flutter applications.
+This library is a partial dart implementation of Bonfida's SNS (Solana Name Service) protocol, specifically enabling the use of .sol domains in Flutter applications.
 
 ## Implementation
 
