@@ -14,3 +14,11 @@ final REVERSE_LOOKUP_CLASS = Ed25519HDPublicKey.fromBase58(
     "33m47vH6Eav6jr5Ry86XjhRft2jRBLDnDgPSHoquXi2Z");
 final ROOT_DOMAIN = Ed25519HDPublicKey.fromBase58(
     "58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx");
+
+final Map<SolanaEnvironment, String> urlMap = {
+  SolanaEnvironment.localnet: "http://127.0.0.1:8899",
+  SolanaEnvironment.devnet: "https://api.devnet.solana.com",
+  SolanaEnvironment.mainnet: "https://api.mainnet-beta.solana.com",
+};
+
+enum SolanaEnvironment { localnet, devnet, mainnet }
