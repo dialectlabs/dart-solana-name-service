@@ -10,13 +10,16 @@ import 'classes/dtos.dart';
 import 'constants.dart';
 import 'pda.dart';
 
-Future<String?> fetchSolanaNameServiceName(String url, String publicKey) async {
+Future<String?> fetchSolanaNameServiceName(
+    SolanaEnvironment environment, String publicKey) async {
   try {
+    final url = urlMap[environment]!;
     if (publicKey.isNotEmpty) {
       final address = Ed25519HDPublicKey.fromBase58(publicKey);
-      var domainName = await findFavoriteDomainName(url, address);
+      var domainName = await findFavoriteDomainName(environment, address);
       if (domainName?.isNotEmpty != true) {
-        final domainKeys = await findOwnedNameAccountsForUser(url, address);
+        final domainKeys =
+            await findOwnedNameAccountsForUser(environment, address);
         domainKeys.sort((a, b) => a.toBase58().compareTo(b.toBase58()));
         for (var domainKey in domainKeys) {
           domainName = await performReverseLookup(url, domainKey);
@@ -33,8 +36,9 @@ Future<String?> fetchSolanaNameServiceName(String url, String publicKey) async {
 }
 
 Future<String?> findFavoriteDomainName(
-    String url, Ed25519HDPublicKey owner) async {
+    SolanaEnvironment environment, Ed25519HDPublicKey owner) async {
   try {
+    final url = urlMap[environment]!;
     final client = RpcClient(url);
     final favoriteKey =
         await getBonfidaSNSProgramAddress(NAME_OFFERS_ID, owner);
@@ -55,11 +59,11 @@ Future<String?> findFavoriteDomainName(
 }
 
 Future<List<Ed25519HDPublicKey>> findOwnedNameAccountsForUser(
-    String url, Ed25519HDPublicKey userAccount) async {
+    SolanaEnvironment environment, Ed25519HDPublicKey userAccount) async {
   final List<ProgramDataFilter> filters = [
     ProgramDataFilter.memcmp(offset: 32, bytes: userAccount.bytes)
   ];
-  final accounts = await RpcClient(url).getProgramAccounts(
+  final accounts = await RpcClient(urlMap[environment]!).getProgramAccounts(
       NAME_PROGRAM_ID.toBase58(),
       encoding: Encoding.base64,
       filters: filters);
