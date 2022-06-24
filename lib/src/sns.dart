@@ -35,6 +35,19 @@ Future<String?> fetchSolanaNameServiceName(
   return null;
 }
 
+Future<Ed25519HDPublicKey?> findAccountByName(
+    SolanaEnvironment environment, String name) async {
+  final hashedName = await getHashedName(name);
+  final key = await getNameAccountKey(hashedName, null, SOL_TLD_AUTHORITY);
+  final registryAccount = await RpcClient(urlMap[environment]!)
+      .getAccountInfo(key.toBase58(), encoding: Encoding.base64);
+  if (registryAccount?.data == null) return null;
+  final registry = parseBytesFromAccount(
+      registryAccount, NameRegistryState.fromBorsh,
+      skip: 0);
+  return registry.owner;
+}
+
 Future<String?> findFavoriteDomainName(
     SolanaEnvironment environment, Ed25519HDPublicKey owner) async {
   try {

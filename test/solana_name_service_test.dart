@@ -22,6 +22,18 @@ void main() {
       expect(name, equals("dialect"));
     });
 
+    test('Reverse lookup success', () async {
+      final pubKey = Ed25519HDPublicKey.fromBase58(
+          "D1ALECTfeCZt9bAbPWtJk7ntv24vDYGPmyS7swp7DY5h");
+      final name = await performReverseLookup(urlMap[environment]!, pubKey);
+      expect(name, equals("dialect"));
+    });
+
+    test('Find public key by name', () async {
+      final owner = await findAccountByName(environment, "kdingens");
+      print(owner?.toBase58());
+    });
+
     test('Find favorite domain name succeess', () async {
       final pubKey = Ed25519HDPublicKey.fromBase58(
           "D1ALECTfeCZt9bAbPWtJk7ntv24vDYGPmyS7swp7DY5h");

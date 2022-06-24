@@ -35,7 +35,16 @@ This library is a partial dart implementation of Bonfida's SNS (Solana Name Serv
     );
     ```
 
-4. Return the SNS domain name associated with a given SNS name registration account
+4. Return an SNS domain name owner's public key
+
+    ```dart
+    final PublicKey publicKey = await findAccountByName(
+        environment: SolanaEnvironment, // mainnet | devnet | localnet
+        name: String // SNS domain name
+    );
+    ```
+
+5. Return the SNS domain name associated with a given SNS name registration account
 
     ```dart
     final String name = await performReverseLookup(
@@ -47,4 +56,4 @@ This library is a partial dart implementation of Bonfida's SNS (Solana Name Serv
 
 ## Further Help & Documentation
 
-We will continue to update documentation as often as possible. But if you need help, feel free to reach out in our [Dialect Discord server](https://discord.gg/wK6WX7974J).
+We will continue to update documentation as often as possible. But if you need help, feel free to reach out in our [Dialect Discord server](https://discord.gg/cxtZVyrJ).
