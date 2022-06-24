@@ -1,6 +1,6 @@
 name: solana_name_service
 description: A dart implementation of Bonfida's decentralized naming service built on Solana.
-version: 0.2.0
+version: 0.2.1
 homepage: https://github.com/dialectlabs/dart-cardinal-twitter
 repository: https://github.com/dialectlabs/dart-cardinal-twitter
 

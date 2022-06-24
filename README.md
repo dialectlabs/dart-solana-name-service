@@ -12,8 +12,8 @@ This library is a partial dart implementation of Bonfida's SNS (Solana Name Serv
 
     ```dart
     final List<PublicKey> accounts = await findOwnedNameAccountsForUser(
-        environment: SolanaEnvironment, // mainnet | devnet | localnet
-        publicKey: PublicKey // user account to query
+        publicKey: PublicKey, // user account to query
+        { environment: SolanaEnvironment } // defaults to mainnnet
     );
     ```
 
@@ -21,8 +21,8 @@ This library is a partial dart implementation of Bonfida's SNS (Solana Name Serv
 
     ```dart
     final String name = await fetchSolanaNameServiceName(
-        environment: SolanaEnvironment, // mainnet | devnet | localnet
-        publicKey: String // user account to query as a string
+        publicKey: String, // user account to query as a string
+        { environment: SolanaEnvironment } // defaults to mainnnet
     );
     ```
 
@@ -30,8 +30,8 @@ This library is a partial dart implementation of Bonfida's SNS (Solana Name Serv
 
     ```dart
     final String name = await findFavoriteDomainName(
-        environment: SolanaEnvironment, // mainnet | devnet | localnet
-        publicKey: PublicKey // user account to query
+        publicKey: PublicKey, // user account to query
+        { environment: SolanaEnvironment } // defaults to mainnnet
     );
     ```
 
@@ -39,8 +39,8 @@ This library is a partial dart implementation of Bonfida's SNS (Solana Name Serv
 
     ```dart
     final PublicKey publicKey = await findAccountByName(
-        environment: SolanaEnvironment, // mainnet | devnet | localnet
-        name: String // SNS domain name
+        name: String, // SNS domain name
+        { environment: SolanaEnvironment } // defaults to mainnnet
     );
     ```
 
@@ -48,8 +48,8 @@ This library is a partial dart implementation of Bonfida's SNS (Solana Name Serv
 
     ```dart
     final String name = await performReverseLookup(
-        environment: SolanaEnvironment, // mainnet | devnet | localnet
-        account: PublicKey // SNS name registration account to query
+        account: PublicKey, // SNS name registration account to query
+        { environment: SolanaEnvironment } // defaults to mainnnet
     );
     ```
 
