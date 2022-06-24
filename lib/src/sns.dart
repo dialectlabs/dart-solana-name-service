@@ -10,18 +10,20 @@ import 'classes/dtos.dart';
 import 'constants.dart';
 import 'pda.dart';
 
-Future<String?> fetchSolanaNameServiceName(
-    SolanaEnvironment environment, String publicKey) async {
+Future<String?> fetchSolanaNameServiceName(String publicKey,
+    {SolanaEnvironment environment = SolanaEnvironment.mainnet}) async {
   try {
     if (publicKey.isNotEmpty) {
       final address = Ed25519HDPublicKey.fromBase58(publicKey);
-      var domainName = await findFavoriteDomainName(environment, address);
+      var domainName =
+          await findFavoriteDomainName(address, environment: environment);
       if (domainName?.isNotEmpty != true) {
-        final domainKeys =
-            await findOwnedNameAccountsForUser(environment, address);
+        final domainKeys = await findOwnedNameAccountsForUser(address,
+            environment: environment);
         domainKeys.sort((a, b) => a.toBase58().compareTo(b.toBase58()));
         for (var domainKey in domainKeys) {
-          domainName = await performReverseLookup(environment, domainKey);
+          domainName =
+              await performReverseLookup(domainKey, environment: environment);
           if (domainName != null) {
             return domainName;
           }
@@ -35,8 +37,8 @@ Future<String?> fetchSolanaNameServiceName(
   return null;
 }
 
-Future<Ed25519HDPublicKey?> findAccountByName(
-    SolanaEnvironment environment, String name) async {
+Future<Ed25519HDPublicKey?> findAccountByName(String name,
+    {SolanaEnvironment environment = SolanaEnvironment.mainnet}) async {
   try {
     final hashedName = getHashedName(name);
     final key = await getNameAccountKey(hashedName, null, SOL_TLD_AUTHORITY);
@@ -53,8 +55,8 @@ Future<Ed25519HDPublicKey?> findAccountByName(
   }
 }
 
-Future<String?> findFavoriteDomainName(
-    SolanaEnvironment environment, Ed25519HDPublicKey owner) async {
+Future<String?> findFavoriteDomainName(Ed25519HDPublicKey owner,
+    {SolanaEnvironment environment = SolanaEnvironment.mainnet}) async {
   try {
     final url = urlMap[environment]!;
     final client = RpcClient(url);
@@ -69,7 +71,8 @@ Future<String?> findFavoriteDomainName(
         favoriteAccount, FavoriteDomain.fromBorsh,
         skip: 0);
 
-    return await performReverseLookup(environment, favoriteDomain.nameAccount);
+    return await performReverseLookup(favoriteDomain.nameAccount,
+        environment: environment);
   } catch (e) {
     print(e);
   }
@@ -77,7 +80,8 @@ Future<String?> findFavoriteDomainName(
 }
 
 Future<List<Ed25519HDPublicKey>> findOwnedNameAccountsForUser(
-    SolanaEnvironment environment, Ed25519HDPublicKey userAccount) async {
+    Ed25519HDPublicKey userAccount,
+    {SolanaEnvironment environment = SolanaEnvironment.mainnet}) async {
   final List<ProgramDataFilter> filters = [
     ProgramDataFilter.memcmp(offset: 32, bytes: userAccount.bytes)
   ];
@@ -112,8 +116,8 @@ Future<Ed25519HDPublicKey> getNameAccountKey(Uint8List hashedName,
       seeds: seeds, programId: NAME_PROGRAM_ID);
 }
 
-Future<String?> performReverseLookup(
-    SolanaEnvironment environment, Ed25519HDPublicKey nameAccount) async {
+Future<String?> performReverseLookup(Ed25519HDPublicKey nameAccount,
+    {SolanaEnvironment environment = SolanaEnvironment.mainnet}) async {
   final hashedReverseLookup = getHashedName(nameAccount.toBase58());
   final reverseLookupAccount =
       await getNameAccountKey(hashedReverseLookup, REVERSE_LOOKUP_CLASS, null);
