@@ -8,4 +8,7 @@ export 'src/sns.dart'
         fetchSolanaNameServiceName,
         findFavoriteDomainName,
         findOwnedNameAccountsForUser,
+        findAccountByName,
+        getHashedName,
+        getNameAccountKey,
         performReverseLookup;

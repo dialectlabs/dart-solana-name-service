@@ -9,28 +9,31 @@ void main() {
 
     test('Find owned accounts succeess', () async {
       final pubKey = Ed25519HDPublicKey.fromBase58(
-          "D1ALECTfeCZt9bAbPWtJk7ntv24vDYGPmyS7swp7DY5h");
+          "7sF56xvsiCQDLAHEHtrYCVjPtQGwTjVjPYLomEFJPsGV");
       var accts = await findOwnedNameAccountsForUser(environment, pubKey);
-      expect(accts.length, equals(1));
+      expect(accts.length, equals(4));
     });
 
-    test('Reverse lookup success', () async {
+    test('Fetch name success', () async {
       final pubKey = Ed25519HDPublicKey.fromBase58(
-          "D1ALECTfeCZt9bAbPWtJk7ntv24vDYGPmyS7swp7DY5h");
+          "7sF56xvsiCQDLAHEHtrYCVjPtQGwTjVjPYLomEFJPsGV");
       final name =
           await fetchSolanaNameServiceName(environment, pubKey.toBase58());
-      expect(name, equals("dialect"));
+      expect(name, equals("kdingens"));
+    });
+
+    test('Find public key by name', () async {
+      final pubKey = Ed25519HDPublicKey.fromBase58(
+          "7sF56xvsiCQDLAHEHtrYCVjPtQGwTjVjPYLomEFJPsGV");
+      final owner = await findAccountByName(environment, "kdingens");
+      expect(owner, equals(pubKey));
     });
 
     test('Find favorite domain name succeess', () async {
       final pubKey = Ed25519HDPublicKey.fromBase58(
-          "D1ALECTfeCZt9bAbPWtJk7ntv24vDYGPmyS7swp7DY5h");
+          "7sF56xvsiCQDLAHEHtrYCVjPtQGwTjVjPYLomEFJPsGV");
       final name = await findFavoriteDomainName(environment, pubKey);
-
-      // TODO - set dialect favorite name
-      print("Found name: $name");
-      // for now, edit the file to test with your own address and associated favorite name
-      // expect(name, equals(""));
+      expect(name, equals("kdingens"));
     });
   });
 }
