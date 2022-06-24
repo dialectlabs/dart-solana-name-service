@@ -13,7 +13,6 @@ import 'pda.dart';
 Future<String?> fetchSolanaNameServiceName(
     SolanaEnvironment environment, String publicKey) async {
   try {
-    final url = urlMap[environment]!;
     if (publicKey.isNotEmpty) {
       final address = Ed25519HDPublicKey.fromBase58(publicKey);
       var domainName = await findFavoriteDomainName(environment, address);
@@ -22,12 +21,13 @@ Future<String?> fetchSolanaNameServiceName(
             await findOwnedNameAccountsForUser(environment, address);
         domainKeys.sort((a, b) => a.toBase58().compareTo(b.toBase58()));
         for (var domainKey in domainKeys) {
-          domainName = await performReverseLookup(url, domainKey);
+          domainName = await performReverseLookup(environment, domainKey);
           if (domainName != null) {
             return domainName;
           }
         }
       }
+      return domainName;
     }
   } catch (e) {
     print(e);
@@ -37,15 +37,20 @@ Future<String?> fetchSolanaNameServiceName(
 
 Future<Ed25519HDPublicKey?> findAccountByName(
     SolanaEnvironment environment, String name) async {
-  final hashedName = await getHashedName(name);
-  final key = await getNameAccountKey(hashedName, null, SOL_TLD_AUTHORITY);
-  final registryAccount = await RpcClient(urlMap[environment]!)
-      .getAccountInfo(key.toBase58(), encoding: Encoding.base64);
-  if (registryAccount?.data == null) return null;
-  final registry = parseBytesFromAccount(
-      registryAccount, NameRegistryState.fromBorsh,
-      skip: 0);
-  return registry.owner;
+  try {
+    final hashedName = getHashedName(name);
+    final key = await getNameAccountKey(hashedName, null, SOL_TLD_AUTHORITY);
+    final registryAccount = await RpcClient(urlMap[environment]!)
+        .getAccountInfo(key.toBase58(), encoding: Encoding.base64);
+    if (registryAccount?.data == null) return null;
+    final registry = parseBytesFromAccount(
+        registryAccount, NameRegistryState.fromBorsh,
+        skip: 0);
+    return registry.owner;
+  } catch (e) {
+    // TODO: investigate occasional buffer overflow error
+    return null;
+  }
 }
 
 Future<String?> findFavoriteDomainName(
@@ -64,7 +69,7 @@ Future<String?> findFavoriteDomainName(
         favoriteAccount, FavoriteDomain.fromBorsh,
         skip: 0);
 
-    return await performReverseLookup(url, favoriteDomain.nameAccount);
+    return await performReverseLookup(environment, favoriteDomain.nameAccount);
   } catch (e) {
     print(e);
   }
@@ -108,12 +113,12 @@ Future<Ed25519HDPublicKey> getNameAccountKey(Uint8List hashedName,
 }
 
 Future<String?> performReverseLookup(
-    String url, Ed25519HDPublicKey nameAccount) async {
+    SolanaEnvironment environment, Ed25519HDPublicKey nameAccount) async {
   final hashedReverseLookup = getHashedName(nameAccount.toBase58());
   final reverseLookupAccount =
       await getNameAccountKey(hashedReverseLookup, REVERSE_LOOKUP_CLASS, null);
 
-  final registryAccount = await RpcClient(url).getAccountInfo(
+  final registryAccount = await RpcClient(urlMap[environment]!).getAccountInfo(
       reverseLookupAccount.toBase58(),
       encoding: Encoding.base64);
   if (registryAccount?.data == null) return null;
